@@ -1,8 +1,11 @@
 import React from 'react';
+import logo from '../Assets/stellar-defi.png';
 
 function Header(){
     return( 
-    <div>Header</div>
+        <header>
+            <div className='leftH'></div>
+        </header>
     )
 }
 
