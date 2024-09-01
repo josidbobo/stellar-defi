@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 async function mainOperations(){
     const keyPair = Keypair.random();
     console.log(keyPair.publicKey());
-    const server = SorobanRpc.Server('https://soroban-testnet.stellar.org');
+    const server = new SorobanRpc.Server('https://soroban-testnet.stellar.org');
 
     await fundAccount(keyPair.publicKey());
     const accountInfo = await server.getAccount(keyPair.publicKey());
