@@ -7,7 +7,11 @@ This project utilises Stellar Blockchain to create a custom asset, create liquid
 ## Demo URL
 [Live Url](https://66d68b14ef8b87a87c78bd95--regal-taiyaki-9bf077.netlify.app/).
 
-## Twitter Post URL
+## Twitter Post URL && Transaction Hashes
+1. Create Liquidity ->  https://stellar.expert/explorer/testnet/tx/03ac75bb5d6c252314157d029b0310d0a9c2dc86af49bae30c4111690f3490b0
+2. Swap Token ->   https://stellar/explorer/testnet/tx/7614cbcb57c13e74a33ed25a91f43fc058b33e22202dda8152739a49a5aa5074
+3. Withdraw ->  https://stellar/explorer/testnet/tx/a7c158341745d758636db020ea0fbdc1c0ba1451e47f753a74193e078bbf174e
+
 
 https://x.com/Byzantineee/status/1830469931252523056
 
