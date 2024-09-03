@@ -13,7 +13,8 @@ This project utilises Stellar Blockchain to create a custom asset, create liquid
 3. Withdraw ->  https://stellar/explorer/testnet/tx/a7c158341745d758636db020ea0fbdc1c0ba1451e47f753a74193e078bbf174e
 
 
-Twitter Post about the challenge: https://x.com/Byzantineee/status/1830469931252523056
+Twitter Post about the challenge:  
+### `https://x.com/Byzantineee/status/1830469931252523056`
 
 ## SETUP INSTRUCTIONS
 
