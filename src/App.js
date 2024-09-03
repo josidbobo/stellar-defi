@@ -11,14 +11,19 @@ import {Server} from '@stellar/stellar-sdk'
 function App() {
   
   const [secretPair, setSecretPair] = useState(null);
+  const [publicK, setPublicK] = useState(null);
   const [liquidity, setLiquidityId] = useState(null);
-  const [asset, setAsset] = useState(Object);
+  const [l, setL] = useState("");
+  const [p, setP] = useState("");
 
   const createAccount = async () => {   
       const server = new StellarSdk.SorobanRpc.Server("https://soroban-testnet.stellar.org");
       const sourceKeyPair = StellarSdk.Keypair.random();
+      alert('Processing...')
+      await fundAccount(sourceKeyPair.publicKey());
 
-      setSecretPair(sourceKeyPair.publicKey());
+      setSecretPair(sourceKeyPair.secret());
+      setPublicK(sourceKeyPair.publicKey());
 
       console.log(`This is the source keyPair: ${sourceKeyPair.publicKey()}`);
       alert("KeyPair created successfully");
@@ -26,11 +31,14 @@ function App() {
   };
 
   const swap = async (amount1, amount2) => {
-    const sourceKeyPair = StellarSdk.Keypair.random();
+    console.log(amount1);
+    setL(amount1); setP(amount2.toString());
+    const sourceKeyPair = StellarSdk.Keypair.fromSecret(secretPair);
     const server = new StellarSdk.SorobanRpc.Server("https://soroban-testnet.stellar.org");
     const BLMToken = new StellarSdk.Asset('BLMToken', sourceKeyPair.publicKey());
     try{
-    await fundAccount(sourceKeyPair.publicKey());
+      alert('Processing...');
+      await fundAccount(sourceKeyPair.publicKey());
       const sourceAccount = await server.getAccount(sourceKeyPair.publicKey());
 
       // New Liquidity asset
@@ -64,7 +72,7 @@ function App() {
 
       const result = await server.sendTransaction(transaction);
       console.log(result);
-      alert(`Successfully created Liquidity Pool`);
+      alert('Created Liquidity');
     }catch(error){
       console.error('Error', error);
       alert('Error adding liquidity');
@@ -75,7 +83,6 @@ function App() {
 
     await fundAccount(traderKeyPair.publicKey());
     const traderAccountInfo = await server.getAccount(traderKeyPair.publicKey());
-
 
     const pathPaymentTrans = new StellarSdk.TransactionBuilder(traderAccountInfo, {
         fee: StellarSdk.BASE_FEE,
@@ -94,7 +101,7 @@ function App() {
     pathPaymentTrans.sign(traderKeyPair);
     const result = await server.sendTransaction(pathPaymentTrans);
     console.log(result);
-    alert('Swap successful');
+    alert(`Swap successful! Hash: ${result.hash}`);
   }catch(error){
     console.log(error);
     alert('Error making swap - something went wrong')
@@ -102,12 +109,13 @@ function App() {
   };
 
   const withdraw = async (amount) => {
-    const sourceKeyPair = StellarSdk.Keypair.random();
+    const sourceKeyPair = StellarSdk.Keypair.fromSecret(secretPair);
     const server = new StellarSdk.SorobanRpc.Server("https://soroban-testnet.stellar.org");
     const BLMToken = new StellarSdk.Asset('BLMToken', sourceKeyPair.publicKey());
+    alert('Processing...');
+    await fundAccount(sourceKeyPair.publicKey());
     const sourceAccount = await server.getAccount(sourceKeyPair.publicKey());
     try{
-    await fundAccount(sourceKeyPair.publicKey());
       // New Liquidity asset
       const lpAsset = new StellarSdk.LiquidityPoolAsset(
         StellarSdk.Asset.native(),
@@ -136,13 +144,10 @@ function App() {
       ).setTimeout(30).build();
 
       transaction.sign(sourceKeyPair);
-
       const result = await server.sendTransaction(transaction);
       console.log(result);
-      alert(`Successfully created Liquidity Pool`);
     }catch(error){
       console.error('Error', error);
-      alert('Error adding liquidity');
     }
     try{
     const traderKeyPair = StellarSdk.Keypair.random();
@@ -167,12 +172,10 @@ function App() {
     })).setTimeout(30).build();
 
     pathPaymentTrans.sign(traderKeyPair);
+    alert('Processing...');
     const result = await server.sendTransaction(pathPaymentTrans);
-    console.log(result);
-    alert('Swap successful');
   }catch(error){
     console.log(error);
-    alert('Error making swap - something went wrong')
     }
     try{ 
       const withdrawTransaction = new StellarSdk.TransactionBuilder(sourceAccount,{
@@ -188,7 +191,7 @@ function App() {
   withdrawTransaction.sign(sourceKeyPair);
   const result = await server.sendTransaction(withdrawTransaction);
   console.log('Successful', result);
-  alert('Withdraw successful!');
+  alert(`Withdraw successful! Hash: ${result.hash}`);
   }catch(error){
     console.error('Error withdrawing', error);
     alert('Error Withdrawing');
@@ -204,7 +207,7 @@ function App() {
             //alert('From funding Operation - Success!');
         }else{
             console.log('Something went wrong with the transaction');
-            alert('From funding operation - Error');
+            //alert('From funding operation - Error');
         }
     }catch(error){
         alert(`Error funding the account ${address}`, error);
@@ -215,7 +218,7 @@ function App() {
 
   return (
     <div className="App">
-      <Header account={secretPair} createAccount={createAccount}/>
+      <Header account={publicK} createAccount={createAccount}/>
       <div className="mainWindow">
         <Routes>
           <Route path="/" element={<Swap account={secretPair} swap={swap}/>}/>

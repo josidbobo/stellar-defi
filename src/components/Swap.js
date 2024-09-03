@@ -6,8 +6,8 @@ function Swap(props){
     const {account, swap} = props;
 
     const [slippage, setSlippage] = useState(2.5);
-    const [tokenOneAmount, setTokenOneAmount] = useState('');
-    const [tokenTwoAmount, setTokenTwoAmount] = useState('');
+    const [tokenOneAmount, setTokenOneAmount] = useState(null);
+    const [tokenTwoAmount, setTokenTwoAmount] = useState(null);
     const [tokenOne, setTokenOne] = useState('XLM');
     const [tokenTwo, setTokenTwo] = useState('BLMToken');
 
@@ -16,7 +16,6 @@ function Swap(props){
     }
 
     function changeAmount(e){
-        e.preventDefault();
         setTokenOneAmount(e.target.value);
     }
 
@@ -28,12 +27,11 @@ function Swap(props){
     }
 
     function changeAmount2(e){
-        e.preventDefault();
         setTokenTwoAmount(e.target.value);
     }
 
     async function fetchDexSwap(){
-        await swap(tokenOne.toString(), tokenTwo.toString());
+        await swap(tokenOneAmount, tokenTwoAmount);
     }
 
     const settings = (
@@ -69,7 +67,7 @@ function Swap(props){
             <div className="assetOne">{tokenOne}</div>
             <div className="assetTwo">{tokenTwo}</div>
         </div>
-        <div className="swapButton" onClick={fetchDexSwap} disabled={!(tokenOneAmount !== "") || !(tokenTwoAmount !== "") || (account == null)}> Swap </div>
+        <div className="swapButton" onClick={fetchDexSwap} disabled={!(tokenOneAmount !== null) || !(tokenTwoAmount !== null) || (account == null)}> Swap </div>
     </div>
     )
 }
