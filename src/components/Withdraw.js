@@ -2,7 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {Input, Popover, Radio, Modal, message} from "antd";
 import {ArrowDownOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons";
 
-function Withdraw(){
+function Withdraw(props){
+    const {withdraw, account} = props;
     const [tokenOneAmount, setTokenOneAmount] = useState(null);
 
     function changeAmount(e){
@@ -10,7 +11,7 @@ function Withdraw(){
     }
 
     async function withdrawFromDex(){
-
+        await withdraw(tokenOneAmount);
     } 
     return( 
         <div className="tradeBox">
@@ -20,7 +21,7 @@ function Withdraw(){
         <div className="inputs">
             <Input about="Max amount to send" placeholder="0.0" value={tokenOneAmount} onChange={changeAmount}/> 
         </div>
-        <div className="swapButton" onClick={withdrawFromDex} disabled={!tokenOneAmount}> Withdraw </div>
+        <div className="swapButton" onClick={withdrawFromDex} disabled={!tokenOneAmount || (account === null)}> Withdraw </div>
     </div>
     )
 }

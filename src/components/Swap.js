@@ -16,6 +16,7 @@ function Swap(props){
     }
 
     function changeAmount(e){
+        e.preventDefault();
         setTokenOneAmount(e.target.value);
     }
 
@@ -27,11 +28,12 @@ function Swap(props){
     }
 
     function changeAmount2(e){
+        e.preventDefault();
         setTokenTwoAmount(e.target.value);
     }
 
     async function fetchDexSwap(){
-        await swap(tokenOne, tokenTwo);
+        await swap(tokenOne.toString(), tokenTwo.toString());
     }
 
     const settings = (

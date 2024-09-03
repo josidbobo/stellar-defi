@@ -12,11 +12,9 @@ function App() {
   
   const [secretPair, setSecretPair] = useState(null);
   const [liquidity, setLiquidityId] = useState(null);
-  const [asset, setAsset] = useState(null);
+  const [asset, setAsset] = useState(Object);
 
-  
   const createAccount = async () => {   
-    try{
       const server = new StellarSdk.SorobanRpc.Server("https://soroban-testnet.stellar.org");
       const sourceKeyPair = StellarSdk.Keypair.random();
 
@@ -24,12 +22,16 @@ function App() {
 
       console.log(`This is the source keyPair: ${sourceKeyPair.publicKey()}`);
       alert("KeyPair created successfully");
-      await fundAccount(sourceKeyPair.publicKey());
-      const sourceAccount = await server.getAccount(sourceKeyPair.publicKey());
+      
+  };
 
-      //Token to swap
-      const BLMToken = new StellarSdk.Asset('BLMToken', sourceKeyPair.publicKey());
-      setAsset(BLMToken);
+  const swap = async (amount1, amount2) => {
+    const sourceKeyPair = StellarSdk.Keypair.random();
+    const server = new StellarSdk.SorobanRpc.Server("https://soroban-testnet.stellar.org");
+    const BLMToken = new StellarSdk.Asset('BLMToken', sourceKeyPair.publicKey());
+    try{
+    await fundAccount(sourceKeyPair.publicKey());
+      const sourceAccount = await server.getAccount(sourceKeyPair.publicKey());
 
       // New Liquidity asset
       const lpAsset = new StellarSdk.LiquidityPoolAsset(
@@ -67,29 +69,26 @@ function App() {
       console.error('Error', error);
       alert('Error adding liquidity');
     }
-  };
-
-  const swap = async (amount1, amount2) => {
     try{
-    const server = new StellarSdk.SorobanRpc.Server("https://soroban-testnet.stellar.org");
     const traderKeyPair = StellarSdk.Keypair.random();
     console.log(`Trader Public key`, traderKeyPair.publicKey());
 
     await fundAccount(traderKeyPair.publicKey());
     const traderAccountInfo = await server.getAccount(traderKeyPair.publicKey());
 
+
     const pathPaymentTrans = new StellarSdk.TransactionBuilder(traderAccountInfo, {
         fee: StellarSdk.BASE_FEE,
         networkPassphrase: StellarSdk.Networks.TESTNET,
     }).addOperation(StellarSdk.Operation.changeTrust(
-        {asset: asset, source: traderKeyPair.publicKey()}
+        {asset: BLMToken, source: traderKeyPair.publicKey()}
     )).addOperation(StellarSdk.Operation.pathPaymentStrictReceive({
         sendAsset: StellarSdk.Asset.native(),
-        sendMax: amount1,
-        destAmount: amount2,
+        sendMax: "1000",
+        destAmount: "50",
         source: traderKeyPair.publicKey(),
         destination: traderKeyPair.publicKey(),
-        destAsset: asset,
+        destAsset: BLMToken,
     })).setTimeout(30).build();
 
     pathPaymentTrans.sign(traderKeyPair);
@@ -103,10 +102,80 @@ function App() {
   };
 
   const withdraw = async (amount) => {
+    const sourceKeyPair = StellarSdk.Keypair.random();
+    const server = new StellarSdk.SorobanRpc.Server("https://soroban-testnet.stellar.org");
+    const BLMToken = new StellarSdk.Asset('BLMToken', sourceKeyPair.publicKey());
+    const sourceAccount = await server.getAccount(sourceKeyPair.publicKey());
     try{
-      const server = new StellarSdk.SorobanRpc.Server("https://soroban-testnet.stellar.org"); 
-      const accountInfo = await server.getAccount(secretPair.publicKey()); 
-      const withdrawTransaction = new StellarSdk.TransactionBuilder(accountInfo,{
+    await fundAccount(sourceKeyPair.publicKey());
+      // New Liquidity asset
+      const lpAsset = new StellarSdk.LiquidityPoolAsset(
+        StellarSdk.Asset.native(),
+        BLMToken,
+        StellarSdk.LiquidityPoolFeeV18
+      );
+
+      const liquidityId = StellarSdk.getLiquidityPoolId('constant_product', lpAsset);
+      setLiquidityId(liquidityId)
+
+      const transaction = new StellarSdk.TransactionBuilder(sourceAccount,{
+        fee: StellarSdk.BASE_FEE,
+        networkPassphrase: StellarSdk.Networks.TESTNET,
+      })
+      .addOperation(StellarSdk.Operation.changeTrust({
+        asset: lpAsset,
+      }))
+      .addOperation(
+        StellarSdk.Operation.liquidityPoolDeposit({
+          liquidityPoolId: liquidityId,
+          maxAmountA: '200',
+          maxAmountB: '200',
+          minPrice: {n: 1, d: 1},
+          maxPrice: {n: 1, d: 1}
+        })
+      ).setTimeout(30).build();
+
+      transaction.sign(sourceKeyPair);
+
+      const result = await server.sendTransaction(transaction);
+      console.log(result);
+      alert(`Successfully created Liquidity Pool`);
+    }catch(error){
+      console.error('Error', error);
+      alert('Error adding liquidity');
+    }
+    try{
+    const traderKeyPair = StellarSdk.Keypair.random();
+    console.log(`Trader Public key`, traderKeyPair.publicKey());
+
+    await fundAccount(traderKeyPair.publicKey());
+    const traderAccountInfo = await server.getAccount(traderKeyPair.publicKey());
+
+
+    const pathPaymentTrans = new StellarSdk.TransactionBuilder(traderAccountInfo, {
+        fee: StellarSdk.BASE_FEE,
+        networkPassphrase: StellarSdk.Networks.TESTNET,
+    }).addOperation(StellarSdk.Operation.changeTrust(
+        {asset: BLMToken, source: traderKeyPair.publicKey()}
+    )).addOperation(StellarSdk.Operation.pathPaymentStrictReceive({
+        sendAsset: StellarSdk.Asset.native(),
+        sendMax: "1000",
+        destAmount: "50",
+        source: traderKeyPair.publicKey(),
+        destination: traderKeyPair.publicKey(),
+        destAsset: BLMToken,
+    })).setTimeout(30).build();
+
+    pathPaymentTrans.sign(traderKeyPair);
+    const result = await server.sendTransaction(pathPaymentTrans);
+    console.log(result);
+    alert('Swap successful');
+  }catch(error){
+    console.log(error);
+    alert('Error making swap - something went wrong')
+    }
+    try{ 
+      const withdrawTransaction = new StellarSdk.TransactionBuilder(sourceAccount,{
       fee: StellarSdk.BASE_FEE,
       networkPassphrase: StellarSdk.Networks.TESTNET
   }).addOperation(StellarSdk.Operation.liquidityPoolWithdraw({
@@ -116,7 +185,7 @@ function App() {
       minAmountB: '0'
   })).setTimeout(30).build();
 
-  withdrawTransaction.sign(secretPair);
+  withdrawTransaction.sign(sourceKeyPair);
   const result = await server.sendTransaction(withdrawTransaction);
   console.log('Successful', result);
   alert('Withdraw successful!');
@@ -132,7 +201,7 @@ function App() {
     try{
         let response = await fetch(friendBotUrl);
         if(response.ok){
-            alert('From funding Operation - Success!');
+            //alert('From funding Operation - Success!');
         }else{
             console.log('Something went wrong with the transaction');
             alert('From funding operation - Error');
