@@ -1,5 +1,6 @@
 # STELLAR DEVELOPER CHALLENGE
 This project utilises Stellar Blockchain to create a custom asset, create liquidity, Swap and Withdraw from the liquidity pool using the StellarSDK.
+![video](https://github.com/user-attachments/assets/92bec0db-c27b-4152-a972-46e029f9037a)
 
 [Live Url](https://66d68b14ef8b87a87c78bd95--regal-taiyaki-9bf077.netlify.app/).
 
