@@ -200,7 +200,7 @@ function App() {
 
 
   async function fundAccount(address){
-   const friendBotUrl = `http://friendbot.stellar.org?addr=${address}`;
+   const friendBotUrl = `https://friendbot.stellar.org?addr=${address}`;
     try{
         let response = await fetch(friendBotUrl);
         if(response.ok){
