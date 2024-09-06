@@ -12,10 +12,6 @@ This project utilises Stellar Blockchain to create a custom asset, create liquid
 2. Swap Token ->   https://stellar/explorer/testnet/tx/7614cbcb57c13e74a33ed25a91f43fc058b33e22202dda8152739a49a5aa5074
 3. Withdraw ->  https://stellar/explorer/testnet/tx/a7c158341745d758636db020ea0fbdc1c0ba1451e47f753a74193e078bbf174e
 
-
-Twitter Post about the challenge:  
-### `https://x.com/Byzantineee/status/1830469931252523056`
-
 ## SETUP INSTRUCTIONS
 
 1. Clone the repo
