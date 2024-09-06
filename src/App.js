@@ -91,8 +91,8 @@ function App() {
         {asset: BLMToken, source: traderKeyPair.publicKey()}
     )).addOperation(StellarSdk.Operation.pathPaymentStrictReceive({
         sendAsset: StellarSdk.Asset.native(),
-        sendMax: "1000",
-        destAmount: "50",
+        sendMax: l,
+        destAmount: p,
         source: traderKeyPair.publicKey(),
         destination: traderKeyPair.publicKey(),
         destAsset: BLMToken,
@@ -164,8 +164,8 @@ function App() {
         {asset: BLMToken, source: traderKeyPair.publicKey()}
     )).addOperation(StellarSdk.Operation.pathPaymentStrictReceive({
         sendAsset: StellarSdk.Asset.native(),
-        sendMax: "1000",
-        destAmount: "50",
+        sendMax: l,
+        destAmount: p,
         source: traderKeyPair.publicKey(),
         destination: traderKeyPair.publicKey(),
         destAsset: BLMToken,
